@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Text.RegularExpressions;
 
@@ -17,7 +15,7 @@ namespace Loupedeck.GoXLR.Utility.Plugin.Actions
         protected int _volume;
         protected int _muteVolume;
 
-        protected abstract string ChannelName { get; }
+        public abstract string ChannelName { get; }
         
         // Initializes the adjustment class.
         // When `hasReset` is set to true, a reset command is automatically created for this adjustment.
@@ -50,15 +48,25 @@ namespace Loupedeck.GoXLR.Utility.Plugin.Actions
             _volume = e.Value.ToObject<int>();
             AdjustmentValueChanged();
         }
-
-        protected abstract bool IsVolumeChangePatchEvent(Patch patch);
-
-        private void SetVolume(string channel, byte volume)
+        
+        private bool IsVolumeChangePatchEvent(Patch patch)
         {
+            var match = Regex.Match(patch.Path, $@"/mixers/(?<serial>\w+)/levels/volumes/{ChannelName}");
+            //var serial = match.Groups["serial"];
+            return match.Success;
+        }
+
+        public void SetVolume(int diff)
+        {
+            var volume = _volume + (int)Math.Round(diff * 2.55d); // Increase or decrease the counter by the number of ticks.
+            
+            if (volume > byte.MaxValue) volume = byte.MaxValue;
+            if (volume < 0) volume = 0;
+            
             var command = new
             {
                 SetVolume = new object[] {
-                    channel,
+                    ChannelName,
                     volume
                 }
             };
@@ -69,14 +77,7 @@ namespace Loupedeck.GoXLR.Utility.Plugin.Actions
         // This method is called when the dial associated to the plugin is rotated.
         protected override void ApplyAdjustment(string actionParameter, int diff)
         {
-            _volume += (int)Math.Round(diff * 2.55d); // Increase or decrease the counter by the number of ticks.
-            if (_volume - byte.MaxValue > 0)
-                _volume = byte.MaxValue;
-
-            if (_volume < 0)
-                _volume = 0;
-
-            SetVolume(ChannelName, (byte)_volume);
+            SetVolume(diff);
 
             AdjustmentValueChanged(); // Notify the Loupedeck service that the adjustment value has changed.
         }
@@ -88,11 +89,11 @@ namespace Loupedeck.GoXLR.Utility.Plugin.Actions
             if (_muteVolume == 0)
             {
                 _muteVolume = _volume;
-                SetVolume(ChannelName, 0);
+                SetVolume(0);
             }
             else
             {
-                SetVolume(ChannelName, (byte)_muteVolume);
+                SetVolume((byte)_muteVolume);
                 _muteVolume = 0;
             }
             
@@ -106,156 +107,89 @@ namespace Loupedeck.GoXLR.Utility.Plugin.Actions
 
     public class MicVolumeAdjustment : VolumeAdjustment
     {
-        protected override string ChannelName => "Mic";
+        public override string ChannelName => "Mic";
 
         public MicVolumeAdjustment()
             : base("Mic", "Mic") { }
-
-        protected override bool IsVolumeChangePatchEvent(Patch patch)
-        {
-            var match = Regex.Match(patch.Path, $@"/mixers/(?<serial>\w+)/levels/volumes/{ChannelName}");
-            //var serial = match.Groups["serial"];
-            return match.Success;
-        }
     }
 
     public class LineInVolumeAdjustment : VolumeAdjustment
     {
-        protected override string ChannelName => "LineIn";
+        public override string ChannelName => "LineIn";
 
         public LineInVolumeAdjustment()
             : base("Line In", "Line In") { }
-
-        protected override bool IsVolumeChangePatchEvent(Patch patch)
-        {
-            var match = Regex.Match(patch.Path, $@"/mixers/(?<serial>\w+)/levels/volumes/{ChannelName}");
-            return match.Success;
-        }
     }
 
     public class ConsoleVolumeAdjustment : VolumeAdjustment
     {
-        protected override string ChannelName => "Console";
+        public override string ChannelName => "Console";
 
         public ConsoleVolumeAdjustment()
             : base("Console", "Console") { }
-
-        protected override bool IsVolumeChangePatchEvent(Patch patch)
-        {
-            var match = Regex.Match(patch.Path, $@"/mixers/(?<serial>\w+)/levels/volumes/{ChannelName}");
-            return match.Success;
-        }
     }
 
     public class SystemVolumeAdjustment : VolumeAdjustment
     {
-        protected override string ChannelName => "System";
+        public override string ChannelName => "System";
 
         public SystemVolumeAdjustment()
             : base("System", "System") { }
-
-        protected override bool IsVolumeChangePatchEvent(Patch patch)
-        {
-            var match = Regex.Match(patch.Path, $@"/mixers/(?<serial>\w+)/levels/volumes/{ChannelName}");
-            return match.Success;
-        }
     }
 
     public class GameVolumeAdjustment : VolumeAdjustment
     {
-        protected override string ChannelName => "Game";
+        public override string ChannelName => "Game";
 
         public GameVolumeAdjustment()
             : base("Game", "Game") { }
-
-        protected override bool IsVolumeChangePatchEvent(Patch patch)
-        {
-            var match = Regex.Match(patch.Path, $@"/mixers/(?<serial>\w+)/levels/volumes/{ChannelName}");
-            return match.Success;
-        }
     }
 
     public class ChatVolumeAdjustment : VolumeAdjustment
     {
-        protected override string ChannelName => "Chat";
+        public override string ChannelName => "Chat";
 
         public ChatVolumeAdjustment()
             : base("Chat", "Chat") { }
-
-        protected override bool IsVolumeChangePatchEvent(Patch patch)
-        {
-            var match = Regex.Match(patch.Path, $@"/mixers/(?<serial>\w+)/levels/volumes/{ChannelName}");
-            return match.Success;
-        }
     }
 
     public class SampleVolumeAdjustment : VolumeAdjustment
     {
-        protected override string ChannelName => "Sample";
+        public override string ChannelName => "Sample";
 
         public SampleVolumeAdjustment()
             : base("Sample", "Sample") { }
-
-        protected override bool IsVolumeChangePatchEvent(Patch patch)
-        {
-            var match = Regex.Match(patch.Path, $@"/mixers/(?<serial>\w+)/levels/volumes/{ChannelName}");
-            return match.Success;
-        }
     }
 
     public class MusicVolumeAdjustment : VolumeAdjustment
     {
-        protected override string ChannelName => "Music";
+        public override string ChannelName => "Music";
 
         public MusicVolumeAdjustment()
             : base("Music", "Music") { }
-
-        protected override bool IsVolumeChangePatchEvent(Patch patch)
-        {
-            var match = Regex.Match(patch.Path, $@"/mixers/(?<serial>\w+)/levels/volumes/{ChannelName}");
-            return match.Success;
-        }
     }
 
     public class HeadphonesVolumeAdjustment : VolumeAdjustment
     {
-        protected override string ChannelName => "Headphones";
+        public override string ChannelName => "Headphones";
 
         public HeadphonesVolumeAdjustment()
             : base("Headphones", "Headphones") { }
-
-        protected override bool IsVolumeChangePatchEvent(Patch patch)
-        {
-            var match = Regex.Match(patch.Path, $@"/mixers/(?<serial>\w+)/levels/volumes/{ChannelName}");
-            return match.Success;
-        }
     }
 
     public class MicMonitorVolumeAdjustment : VolumeAdjustment
     {
-        protected override string ChannelName => "MicMonitor";
+        public override string ChannelName => "MicMonitor";
 
         public MicMonitorVolumeAdjustment()
             : base("Mic Monitor", "Mic Monitor") { }
-
-        protected override bool IsVolumeChangePatchEvent(Patch patch)
-        {
-            var match = Regex.Match(patch.Path, $@"/mixers/(?<serial>\w+)/levels/volumes/{ChannelName}");
-            return match.Success;
-        }
     }
 
     public class LineOutVolumeAdjustment : VolumeAdjustment
     {
-        protected override string ChannelName => "LineOut";
+        public override string ChannelName => "LineOut";
 
         public LineOutVolumeAdjustment()
             : base("Line Out", "Line Out") { }
-
-        protected override bool IsVolumeChangePatchEvent(Patch patch)
-        {
-            var match = Regex.Match(patch.Path, $@"/mixers/(?<serial>\w+)/levels/volumes/{ChannelName}");
-            return match.Success;
-        }
     }
 }
