@@ -42,6 +42,8 @@ namespace Loupedeck.GoXLR.Utility.Plugin.Actions
 
         private void ClientOnPatchEvent(object sender, Patch e)
         {
+            //Remember, at this point we can actually get every event...
+            //Be sure to check the type, before parsing.
             if (!IsVolumeChangePatchEvent(e))
                 return;
 

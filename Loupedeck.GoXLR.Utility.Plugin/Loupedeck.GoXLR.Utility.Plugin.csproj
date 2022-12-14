@@ -59,6 +59,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Actions\ChangeProfileCommand.cs" />
     <Compile Include="Actions\FaderAdjustments.cs" />
     <Compile Include="Actions\VolumeAdjustment.cs" />
     <Compile Include="GoXlrUtiltyClient.cs" />

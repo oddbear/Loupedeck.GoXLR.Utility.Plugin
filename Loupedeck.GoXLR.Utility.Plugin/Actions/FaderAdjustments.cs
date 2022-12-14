@@ -41,15 +41,21 @@ namespace Loupedeck.GoXLR.Utility.Plugin.Actions
         private void ClientOnPatchEvent(object sender, Patch e)
         {
             if (IsChannelChangedPatchEvent(e))
+            {
                 _channelName = e.Value.ToObject<string>();
+                AdjustmentValueChanged();
+            }
 
             if (IsMuteTypePatchEvent(e))
+            {
                 _muteType = e.Value.ToObject<MuteFunction>();
-
+            }
+            
             if (IsVolumeChangePatchEvent(e))
+            {
                 _volume = e.Value.ToObject<int>();
-
-            AdjustmentValueChanged();
+                AdjustmentValueChanged();
+            }
         }
         
         private bool IsChannelChangedPatchEvent(Patch patch)
