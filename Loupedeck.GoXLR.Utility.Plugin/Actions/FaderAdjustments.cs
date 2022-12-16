@@ -13,6 +13,7 @@ namespace Loupedeck.GoXLR.Utility.Plugin.Actions
         
         private string _channelName;
         private MuteFunction _muteType;
+        private ChannelState _muteState;
         private int _volume;
 
         protected abstract string FaderName { get; }
@@ -27,6 +28,7 @@ namespace Loupedeck.GoXLR.Utility.Plugin.Actions
         {
             _plugin = (UtilityPlugin)Plugin;
             Client.PatchEvent += IsChannelChangedPatchEvent;
+            Client.PatchEvent += IsMuteStatePatchEvent;
             Client.PatchEvent += IsMuteTypePatchEvent;
             Client.PatchEvent += IsVolumeChangePatchEvent;
 
@@ -36,6 +38,7 @@ namespace Loupedeck.GoXLR.Utility.Plugin.Actions
         protected override bool OnUnload()
         {
             Client.PatchEvent -= IsChannelChangedPatchEvent;
+            Client.PatchEvent -= IsMuteStatePatchEvent;
             Client.PatchEvent -= IsMuteTypePatchEvent;
             Client.PatchEvent -= IsVolumeChangePatchEvent;
 
@@ -49,6 +52,14 @@ namespace Loupedeck.GoXLR.Utility.Plugin.Actions
 
             _channelName = patch.Value.ToObject<string>();
             AdjustmentValueChanged();
+        }
+
+        private void IsMuteStatePatchEvent(object sender, Patch patch)
+        {
+            if (!Regex.IsMatch(patch.Path, $@"/mixers/(?<serial>\w+)/fader_status/{FaderName}/mute_state"))
+                return;
+
+            _muteState = patch.Value.ToObject<ChannelState>();
         }
 
         private void IsMuteTypePatchEvent(object sender, Patch patch)
@@ -67,8 +78,8 @@ namespace Loupedeck.GoXLR.Utility.Plugin.Actions
             _volume = patch.Value.ToObject<int>();
             AdjustmentValueChanged();
         }
-
-        // This method is called when the dial associated to the plugin is rotated.
+        
+        //Here it's possible to have a Dictionary for all channels instead.
         protected override void ApplyAdjustment(string actionParameter, int diff)
         {
             var volumeAdjustment = _plugin
@@ -81,7 +92,7 @@ namespace Loupedeck.GoXLR.Utility.Plugin.Actions
 
             volumeAdjustment.SetVolume(diff);
 
-            AdjustmentValueChanged(); // Notify the Loupedeck service that the adjustment value has changed.
+            AdjustmentValueChanged();
         }
 
         protected override void RunCommand(string actionParameter)
@@ -107,6 +118,11 @@ namespace Loupedeck.GoXLR.Utility.Plugin.Actions
         ToVoiceChat,
         ToPhones,
         ToLineOut,
+    }
+    public enum ChannelState
+    {
+        Muted,
+        Unmuted,
     }
 
     public class FaderA_Adjustment : FaderAdjustments

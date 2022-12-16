@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 
@@ -16,11 +15,11 @@ namespace Loupedeck.GoXLR.Utility.Plugin.Actions
 
         public ChangeProfileCommand()
         {
-            this.DisplayName = "Profile Set";
-            this.GroupName = "";
-            this.Description = "Select profile.";
+            DisplayName = "Profile Set";
+            GroupName = "";
+            Description = "Select profile.";
 
-            this.MakeProfileAction("list;Profile:");
+            MakeProfileAction("list;Profile:");
         }
 
         protected override bool OnLoad()
@@ -48,6 +47,7 @@ namespace Loupedeck.GoXLR.Utility.Plugin.Actions
                 return;
 
             _selectedProfile = patch.Value.ToObject<string>();
+            AdjustmentValueChanged();
         }
 
         private void IsProfileNameIndexPatchEvent(object sender, Patch patch)

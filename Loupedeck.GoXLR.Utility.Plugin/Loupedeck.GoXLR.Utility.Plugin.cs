@@ -21,7 +21,7 @@ namespace Loupedeck.GoXLR.Utility.Plugin
         public override void Load()
         {
             Client.Start();
-            this.LoadPluginIcons();
+            LoadPluginIcons();
         }
 
         // This method is called when the plugin is unloaded during the Loupedeck service shutdown.
@@ -33,10 +33,10 @@ namespace Loupedeck.GoXLR.Utility.Plugin
         private void LoadPluginIcons()
         {
             //var resources = this.Assembly.GetManifestResourceNames();
-            this.Info.Icon16x16 = EmbeddedResources.ReadImage("Loupedeck.GoXLR.Utility.Plugin.metadata.Icon16x16.png");
-            this.Info.Icon32x32 = EmbeddedResources.ReadImage("Loupedeck.GoXLR.Utility.Plugin.metadata.Icon32x32.png");
-            this.Info.Icon48x48 = EmbeddedResources.ReadImage("Loupedeck.GoXLR.Utility.Plugin.metadata.Icon48x48.png");
-            this.Info.Icon256x256 = EmbeddedResources.ReadImage("Loupedeck.GoXLR.Utility.Plugin.metadata.Icon256x256.png");
+            Info.Icon16x16 = EmbeddedResources.ReadImage("Loupedeck.GoXLR.Utility.Plugin.metadata.Icon16x16.png");
+            Info.Icon32x32 = EmbeddedResources.ReadImage("Loupedeck.GoXLR.Utility.Plugin.metadata.Icon32x32.png");
+            Info.Icon48x48 = EmbeddedResources.ReadImage("Loupedeck.GoXLR.Utility.Plugin.metadata.Icon48x48.png");
+            Info.Icon256x256 = EmbeddedResources.ReadImage("Loupedeck.GoXLR.Utility.Plugin.metadata.Icon256x256.png");
         }
     }
 }

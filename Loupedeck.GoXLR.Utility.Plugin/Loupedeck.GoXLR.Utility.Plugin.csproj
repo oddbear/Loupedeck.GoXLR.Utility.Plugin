@@ -61,6 +61,7 @@
   <ItemGroup>
     <Compile Include="Actions\ChangeProfileCommand.cs" />
     <Compile Include="Actions\FaderAdjustments.cs" />
+    <Compile Include="Actions\RoutingCommand.cs" />
     <Compile Include="Actions\VolumeAdjustment.cs" />
     <Compile Include="GoXlrUtiltyClient.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
