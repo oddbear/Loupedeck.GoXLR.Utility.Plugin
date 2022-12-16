@@ -11,7 +11,8 @@ namespace Loupedeck.GoXLR.Utility.Plugin.Actions
 
         private GoXlrUtiltyClient Client => _plugin?.Client;
 
-        private readonly List<string> _profiles = new List<string>();
+        private List<string> _profiles = new List<string>();
+        private string _selectedProfile;
 
         public ChangeProfileCommand()
         {
@@ -25,61 +26,63 @@ namespace Loupedeck.GoXLR.Utility.Plugin.Actions
         protected override bool OnLoad()
         {
             _plugin = (UtilityPlugin)Plugin;
-            Client.PatchEvent += ClientOnPatchEvent;
+            Client.PatchEvent += IsProfileNameIndexPatchEvent;
+            Client.PatchEvent += IsProfileNamePatchEvent;
+            Client.PatchEvent += IsProfileListPatchEvent;
 
             return true;
         }
 
         protected override bool OnUnload()
         {
-            Client.PatchEvent -= ClientOnPatchEvent;
+            Client.PatchEvent -= IsProfileNameIndexPatchEvent;
+            Client.PatchEvent -= IsProfileNamePatchEvent;
+            Client.PatchEvent -= IsProfileListPatchEvent;
 
             return true;
         }
-        
-        private void ClientOnPatchEvent(object sender, Patch e)
-        {
-            if (IsProfileNamePatchEvent(e))
-            {
-                var value = e.Value.ToObject<string>();
-                _profiles.Add(value);
-            }
 
-            var (isProfileNameIndex, index) = IsProfileNameIndexPatchEvent(e);
-            if (isProfileNameIndex)
-            {
-                var value = e.Value.ToObject<string>();
-                switch (e.Op)
-                {
-                    case OpPatchEnum.Add:
-                        _profiles.Add(value);
-                        break;
-                    case OpPatchEnum.Remove:
-                        _profiles.RemoveAt(index);
-                        break;
-                    case OpPatchEnum.Replace:
-                        _profiles[index] = value;
-                        break;
-                }
-            }
+        private void IsProfileNamePatchEvent(object sender, Patch patch)
+        {
+            if (!Regex.IsMatch(patch.Path, @"/mixers/(?<serial>\w+)/profile_name"))
+                return;
+
+            _selectedProfile = patch.Value.ToObject<string>();
         }
 
-        private bool IsProfileNamePatchEvent(Patch patch)
-            => Regex.IsMatch(patch.Path, @"/mixers/(?<serial>\w+)/profile_name");
-
-        //TODO: I cannot get this to work in the Web UI... is it /profile_nameprofile_name/<index>, or just /profile_nameprofile_name
-        private (bool, int) IsProfileNameIndexPatchEvent(Patch patch)
+        private void IsProfileNameIndexPatchEvent(object sender, Patch patch)
         {
-            var match = Regex.Match(patch.Path, @"/mixers/(?<serial>\w+)/profile_name/(?<index>\d+)");
+            var match = Regex.Match(patch.Path, @"/files/profiles/(?<index>\d+)");
             if (!match.Success)
-                return (false, default);
+                return;
 
             var stringIndex = match.Groups["index"].Value;
-            return int.TryParse(stringIndex, out var index)
-                ? (true, index)
-                : (false, default);
+            if (!int.TryParse(stringIndex, out var index))
+                return;
+            
+            var value = patch.Value.ToObject<string>();
+            switch (patch.Op)
+            {
+                case OpPatchEnum.Add:
+                    _profiles.Add(value);
+                    break;
+                case OpPatchEnum.Remove:
+                    _profiles.RemoveAt(index);
+                    break;
+                case OpPatchEnum.Replace:
+                    _profiles[index] = value;
+                    break;
+            }
         }
 
+        private void IsProfileListPatchEvent(object sender, Patch patch)
+        {
+            if (!Regex.IsMatch(patch.Path, @"/files/profiles"))
+                return;
+
+            _profiles = patch.Value.ToObject<List<string>>();
+        }
+        
         protected override void RunCommand(string actionParameter)
         {
             var command = new
@@ -94,5 +97,11 @@ namespace Loupedeck.GoXLR.Utility.Plugin.Actions
             _profiles
                 .Select(profileName => new PluginActionParameter(profileName, profileName, string.Empty))
                 .ToArray();
+
+        //TODO: Not working:
+        protected override string GetCommandDisplayName(string actionParameter, PluginImageSize imageSize)
+            => actionParameter == _selectedProfile
+                ? $"[{actionParameter}]"
+                : actionParameter;
     }
 }

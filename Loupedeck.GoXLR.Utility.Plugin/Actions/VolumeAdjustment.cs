@@ -28,34 +28,27 @@ namespace Loupedeck.GoXLR.Utility.Plugin.Actions
         protected override bool OnLoad()
         {
             _plugin = (UtilityPlugin)Plugin;
-            Client.PatchEvent += ClientOnPatchEvent;
+            Client.PatchEvent += IsVolumeChangePatchEvent;
 
             return true;
         }
 
         protected override bool OnUnload()
         {
-            Client.PatchEvent -= ClientOnPatchEvent;
+            Client.PatchEvent -= IsVolumeChangePatchEvent;
 
             return true;
         }
 
-        private void ClientOnPatchEvent(object sender, Patch e)
-        {
-            //Remember, at this point we can actually get every event...
-            //Be sure to check the type, before parsing.
-            if (!IsVolumeChangePatchEvent(e))
-                return;
-
-            _volume = e.Value.ToObject<int>();
-            AdjustmentValueChanged();
-        }
-        
-        private bool IsVolumeChangePatchEvent(Patch patch)
+        private void IsVolumeChangePatchEvent(object sender, Patch patch)
         {
             var match = Regex.Match(patch.Path, $@"/mixers/(?<serial>\w+)/levels/volumes/{ChannelName}");
+            if (!match.Success)
+                return;
+
             //var serial = match.Groups["serial"];
-            return match.Success;
+            _volume = patch.Value.ToObject<int>();
+            AdjustmentValueChanged();
         }
 
         public void SetVolume(int diff)
@@ -105,6 +98,12 @@ namespace Loupedeck.GoXLR.Utility.Plugin.Actions
         // Returns the adjustment value that is shown next to the dial.
         protected override string GetAdjustmentValue(string actionParameter)
             => Math.Round(_volume * 100d / 0xFF).ToString(CultureInfo.InvariantCulture);
+
+        protected override string GetCommandDisplayName(string actionParameter, PluginImageSize imageSize)
+            => $"{ChannelName} Mute";
+
+        protected override string GetAdjustmentDisplayName(string actionParameter, PluginImageSize imageSize)
+            => $"{ChannelName} Volume";
     }
 
     public class MicVolumeAdjustment : VolumeAdjustment

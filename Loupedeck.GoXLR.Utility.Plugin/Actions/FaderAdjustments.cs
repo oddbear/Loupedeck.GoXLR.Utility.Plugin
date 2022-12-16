@@ -26,46 +26,47 @@ namespace Loupedeck.GoXLR.Utility.Plugin.Actions
         protected override bool OnLoad()
         {
             _plugin = (UtilityPlugin)Plugin;
-            Client.PatchEvent += ClientOnPatchEvent;
+            Client.PatchEvent += IsChannelChangedPatchEvent;
+            Client.PatchEvent += IsMuteTypePatchEvent;
+            Client.PatchEvent += IsVolumeChangePatchEvent;
 
             return true;
         }
 
         protected override bool OnUnload()
         {
-            Client.PatchEvent -= ClientOnPatchEvent;
+            Client.PatchEvent -= IsChannelChangedPatchEvent;
+            Client.PatchEvent -= IsMuteTypePatchEvent;
+            Client.PatchEvent -= IsVolumeChangePatchEvent;
 
             return true;
         }
-
-        private void ClientOnPatchEvent(object sender, Patch e)
-        {
-            if (IsChannelChangedPatchEvent(e))
-            {
-                _channelName = e.Value.ToObject<string>();
-                AdjustmentValueChanged();
-            }
-
-            if (IsMuteTypePatchEvent(e))
-            {
-                _muteType = e.Value.ToObject<MuteFunction>();
-            }
-            
-            if (IsVolumeChangePatchEvent(e))
-            {
-                _volume = e.Value.ToObject<int>();
-                AdjustmentValueChanged();
-            }
-        }
         
-        private bool IsChannelChangedPatchEvent(Patch patch)
-            => Regex.IsMatch(patch.Path, $@"/mixers/(?<serial>\w+)/fader_status/{FaderName}/channel");
+        private void IsChannelChangedPatchEvent(object sender, Patch patch)
+        {
+            if (!Regex.IsMatch(patch.Path, $@"/mixers/(?<serial>\w+)/fader_status/{FaderName}/channel"))
+                return;
 
-        private bool IsMuteTypePatchEvent(Patch patch)
-            => Regex.IsMatch(patch.Path, $@"/mixers/(?<serial>\w+)/fader_status/{FaderName}/mute_type");
+            _channelName = patch.Value.ToObject<string>();
+            AdjustmentValueChanged();
+        }
 
-        private bool IsVolumeChangePatchEvent(Patch patch)
-            => Regex.IsMatch(patch.Path, $@"/mixers/(?<serial>\w+)/levels/volumes/{_channelName}");
+        private void IsMuteTypePatchEvent(object sender, Patch patch)
+        {
+            if (!Regex.IsMatch(patch.Path, $@"/mixers/(?<serial>\w+)/fader_status/{FaderName}/mute_type"))
+                return;
+
+            _muteType = patch.Value.ToObject<MuteFunction>();
+        }
+
+        private void IsVolumeChangePatchEvent(object sender, Patch patch)
+        {
+            if (!Regex.IsMatch(patch.Path, $@"/mixers/(?<serial>\w+)/levels/volumes/{_channelName}"))
+                return;
+
+            _volume = patch.Value.ToObject<int>();
+            AdjustmentValueChanged();
+        }
 
         // This method is called when the dial associated to the plugin is rotated.
         protected override void ApplyAdjustment(string actionParameter, int diff)
