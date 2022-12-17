@@ -9,11 +9,11 @@ namespace Loupedeck.GoXLR.Utility.Plugin.Actions
     {
         private UtilityPlugin _plugin;
 
-        private GoXlrUtiltyClient Client => _plugin?.Client;
+        private GoXlrUtilityClient Client => _plugin?.Client;
         
         private string _channelName;
         private MuteFunction _muteType;
-        private ChannelState _muteState;
+        private MuteState _muteState;
         private int _volume;
 
         protected abstract string FaderName { get; }
@@ -59,7 +59,7 @@ namespace Loupedeck.GoXLR.Utility.Plugin.Actions
             if (!Regex.IsMatch(patch.Path, $@"/mixers/(?<serial>\w+)/fader_status/{FaderName}/mute_state"))
                 return;
 
-            _muteState = patch.Value.ToObject<ChannelState>();
+            _muteState = patch.Value.ToObject<MuteState>();
         }
 
         private void IsMuteTypePatchEvent(object sender, Patch patch)
@@ -119,10 +119,12 @@ namespace Loupedeck.GoXLR.Utility.Plugin.Actions
         ToPhones,
         ToLineOut,
     }
-    public enum ChannelState
+
+    public enum MuteState
     {
-        Muted,
         Unmuted,
+        MutedToX,
+        MutedToAll,
     }
 
     public class FaderA_Adjustment : FaderAdjustments

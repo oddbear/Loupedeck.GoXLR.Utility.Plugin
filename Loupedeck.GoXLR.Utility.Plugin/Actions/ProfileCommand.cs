@@ -4,16 +4,16 @@ using System.Text.RegularExpressions;
 
 namespace Loupedeck.GoXLR.Utility.Plugin.Actions
 {
-    public class ChangeProfileCommand : PluginDynamicCommand
+    public class ProfileCommand : PluginDynamicCommand
     {
         private UtilityPlugin _plugin;
 
-        private GoXlrUtiltyClient Client => _plugin?.Client;
+        private GoXlrUtilityClient Client => _plugin?.Client;
 
         private List<string> _profiles = new List<string>();
         private string _selectedProfile;
 
-        public ChangeProfileCommand()
+        public ProfileCommand()
         {
             DisplayName = "Profile Set";
             GroupName = "";
@@ -47,7 +47,7 @@ namespace Loupedeck.GoXLR.Utility.Plugin.Actions
                 return;
 
             _selectedProfile = patch.Value.ToObject<string>();
-            AdjustmentValueChanged();
+            ActionImageChanged();
         }
 
         private void IsProfileNameIndexPatchEvent(object sender, Patch patch)
@@ -60,7 +60,7 @@ namespace Loupedeck.GoXLR.Utility.Plugin.Actions
             if (!int.TryParse(stringIndex, out var index))
                 return;
             
-            var value = patch.Value.ToObject<string>();
+            var value = patch.Value?.ToObject<string>();
             switch (patch.Op)
             {
                 case OpPatchEnum.Add:
@@ -98,10 +98,22 @@ namespace Loupedeck.GoXLR.Utility.Plugin.Actions
                 .Select(profileName => new PluginActionParameter(profileName, profileName, string.Empty))
                 .ToArray();
 
-        //TODO: Not working:
-        protected override string GetCommandDisplayName(string actionParameter, PluginImageSize imageSize)
-            => actionParameter == _selectedProfile
-                ? $"[{actionParameter}]"
-                : actionParameter;
+        protected override BitmapImage GetCommandImage(string actionParameter, PluginImageSize imageSize)
+        {
+            if (actionParameter is null)
+                return null;
+
+            using (var bitmapBuilder = new BitmapBuilder(imageSize))
+            {
+                var color = actionParameter == _selectedProfile
+                    ? new BitmapColor(0x00, 0x50, 0x00)
+                    : BitmapColor.Black;
+
+                bitmapBuilder.Clear(color);
+                bitmapBuilder.DrawText(actionParameter);
+
+                return bitmapBuilder.ToImage();
+            }
+        }
     }
 }

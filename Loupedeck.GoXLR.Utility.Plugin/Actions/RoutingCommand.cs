@@ -10,7 +10,7 @@ namespace Loupedeck.GoXLR.Utility.Plugin.Actions
 
         private UtilityPlugin _plugin;
 
-        private GoXlrUtiltyClient Client => _plugin?.Client;
+        private GoXlrUtilityClient Client => _plugin?.Client;
 
         public RoutingCommand()
         {

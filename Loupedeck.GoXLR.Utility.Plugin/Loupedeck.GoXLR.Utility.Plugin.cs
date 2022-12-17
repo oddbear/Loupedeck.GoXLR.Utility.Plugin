@@ -4,7 +4,7 @@ namespace Loupedeck.GoXLR.Utility.Plugin
 
     public class UtilityPlugin : Loupedeck.Plugin
     {
-        public GoXlrUtiltyClient Client { get; }
+        public GoXlrUtilityClient Client { get; }
 
         // Gets a value indicating whether this is an Universal plugin or an Application plugin.
         public override bool UsesApplicationApiOnly => true;
@@ -14,7 +14,7 @@ namespace Loupedeck.GoXLR.Utility.Plugin
 
         public UtilityPlugin()
         {
-            Client = new GoXlrUtiltyClient();
+            Client = new GoXlrUtilityClient();
         }
 
         // This method is called when the plugin is loaded during the Loupedeck service start-up.

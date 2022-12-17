@@ -9,7 +9,7 @@ namespace Loupedeck.GoXLR.Utility.Plugin.Actions
     {
         private UtilityPlugin _plugin;
 
-        private GoXlrUtiltyClient Client => _plugin?.Client;
+        private GoXlrUtilityClient Client => _plugin?.Client;
 
         // This variable holds the current value of the counter.
         protected int _volume;

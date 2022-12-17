@@ -6,7 +6,7 @@ using WebSocketSharp;
 
 namespace Loupedeck.GoXLR.Utility.Plugin
 {
-	public class GoXlrUtiltyClient : IDisposable
+	public class GoXlrUtilityClient : IDisposable
 	{
 		/// <summary>Event handler for patches.</summary>
 		public event EventHandler<Patch> PatchEvent;
@@ -16,7 +16,7 @@ namespace Loupedeck.GoXLR.Utility.Plugin
 
 		private readonly WebSocket _client;
 
-		public GoXlrUtiltyClient()
+		public GoXlrUtilityClient()
 		{
 			_client = new WebSocket("ws://127.0.0.1:14564/api/websocket");
 			_client.OnOpen += ClientOnOpen;
@@ -73,34 +73,39 @@ namespace Loupedeck.GoXLR.Utility.Plugin
 				return;
 
 			try
-			{
-				if (message.IsText)
-				{
-					var jObject = JsonConvert.DeserializeObject<Response>(message.Data);
-					if (jObject?.Data?.Status != null)
-					{
-                        var mixers = jObject?.Data?.Status["mixers"];
-                        if (mixers is JObject devices)
-                        {
-                            Devices = devices
-                                .Properties()
-                                .Select(property => property.Name)
-                                .ToArray();
-                        }
+            {
+                if (!message.IsText)
+                    return;
 
-                        TraverseObject(jObject.Data.Status);
-					}
+                var jObject = JsonConvert.DeserializeObject<JObject>(message.Data);
 
-					if (jObject?.Data?.Patch != null)
-					{
-						foreach (var patch in jObject.Data.Patch)
-						{
-							PatchEvent?.Invoke(this, patch);
-						}
-					}
-				}
-			}
-			catch
+                var data = jObject?.Object("data");
+
+                var status = data.Object("Status");
+                if (status != null)
+                {
+                    var mixers = status.Object("mixers");
+                    if (mixers != null)
+                    {
+                        Devices = mixers
+                            .Properties()
+                            .Select(property => property.Name)
+                            .ToArray();
+                    }
+
+                    TraverseObject(status);
+                }
+
+                var patches = data.Array("Patch");
+                if (patches != null)
+                {
+                    foreach (var patch in patches.ToObject<Patch[]>())
+                    {
+                        PatchEvent?.Invoke(this, patch);
+                    }
+                }
+            }
+			catch (Exception ex)
 			{
 				//message.Dump("Error");
 			}
@@ -139,34 +144,18 @@ namespace Loupedeck.GoXLR.Utility.Plugin
 		}
 	}
 
-	public class Response
+    static class JsonNetExtensions
 	{
-		[JsonProperty("id")]
-		public uint Id { get; set; }
+        public static JArray Array(this JObject jObject, string propertyName)
+		    => jObject?.Property(propertyName)?.Value as JArray;
 
-		[JsonProperty("data")]
-		public DataPayload Data { get; set; }
-	}
-
-	public class DataPayload
-	{
-		[JsonProperty("Error")]
-		public string Error { get; set; }
-
-		//[JsonProperty("HttpState")]
-		//public HttpSettings.HttpSettings HttpState { get; set; }
-
-		[JsonProperty("Patch")]
-		public Patch[] Patch { get; set; }
-
-		[JsonProperty("Status")]
-		public JObject Status { get; set; }
-	}
-
+		public static JObject Object(this JObject jObject, string propertyName)
+            => jObject?.Property(propertyName)?.Value as JObject;
+    }
+	
 	public class Patch
 	{
 		[JsonProperty("op")]
-		//[JsonConverter(typeof(JsonStringEnumConverter))]
 		public OpPatchEnum Op { get; set; }
 
 		[JsonProperty("path")]
