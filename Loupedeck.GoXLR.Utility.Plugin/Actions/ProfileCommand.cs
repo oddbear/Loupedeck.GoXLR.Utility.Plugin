@@ -6,7 +6,7 @@ namespace Loupedeck.GoXLR.Utility.Plugin.Actions
 {
     public class ProfileCommand : PluginDynamicCommand
     {
-        private UtilityPlugin _plugin;
+        private GoXLRUtilityPlugin _plugin;
 
         private GoXlrUtilityClient Client => _plugin?.Client;
 
@@ -24,7 +24,7 @@ namespace Loupedeck.GoXLR.Utility.Plugin.Actions
 
         protected override bool OnLoad()
         {
-            _plugin = (UtilityPlugin)Plugin;
+            _plugin = (GoXLRUtilityPlugin)Plugin;
             Client.PatchEvent += IsProfileNameIndexPatchEvent;
             Client.PatchEvent += IsProfileNamePatchEvent;
             Client.PatchEvent += IsProfileListPatchEvent;

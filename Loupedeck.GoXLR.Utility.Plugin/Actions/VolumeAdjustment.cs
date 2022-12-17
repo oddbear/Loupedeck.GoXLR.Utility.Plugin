@@ -8,7 +8,7 @@ namespace Loupedeck.GoXLR.Utility.Plugin.Actions
     // This class implements an example adjustment that counts the rotation ticks of a dial.
     public abstract class VolumeAdjustment : PluginDynamicAdjustment
     {
-        private UtilityPlugin _plugin;
+        private GoXLRUtilityPlugin _plugin;
 
         private GoXlrUtilityClient Client => _plugin?.Client;
 
@@ -28,7 +28,7 @@ namespace Loupedeck.GoXLR.Utility.Plugin.Actions
 
         protected override bool OnLoad()
         {
-            _plugin = (UtilityPlugin)Plugin;
+            _plugin = (GoXLRUtilityPlugin)Plugin;
             Client.PatchEvent += IsVolumeChangePatchEvent;
 
             return true;

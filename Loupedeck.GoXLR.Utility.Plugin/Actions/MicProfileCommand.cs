@@ -1,15 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace Loupedeck.GoXLR.Utility.Plugin.Actions
 {
     public class MicProfileCommand : PluginDynamicCommand
     {
-        private UtilityPlugin _plugin;
+        private GoXLRUtilityPlugin _plugin;
 
         private GoXlrUtilityClient Client => _plugin?.Client;
 
@@ -27,7 +24,7 @@ namespace Loupedeck.GoXLR.Utility.Plugin.Actions
 
         protected override bool OnLoad()
         {
-            _plugin = (UtilityPlugin)Plugin;
+            _plugin = (GoXLRUtilityPlugin)Plugin;
             Client.PatchEvent += IsMicProfileNameIndexPatchEvent;
             Client.PatchEvent += IsMicProfileNamePatchEvent;
             Client.PatchEvent += IsMicProfileListPatchEvent;

@@ -9,7 +9,7 @@ namespace Loupedeck.GoXLR.Utility.Plugin.Actions
     {
         private readonly Dictionary<string, bool> _states = new Dictionary<string, bool>();
 
-        private UtilityPlugin _plugin;
+        private GoXLRUtilityPlugin _plugin;
 
         private GoXlrUtilityClient Client => _plugin?.Client;
 
@@ -24,7 +24,7 @@ namespace Loupedeck.GoXLR.Utility.Plugin.Actions
 
         protected override bool OnLoad()
         {
-            _plugin = (UtilityPlugin)Plugin;
+            _plugin = (GoXLRUtilityPlugin)Plugin;
             Client.PatchEvent += IsRouteChangePatchEvent;
 
             return true;

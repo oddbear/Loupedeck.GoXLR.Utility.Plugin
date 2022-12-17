@@ -2,7 +2,7 @@ namespace Loupedeck.GoXLR.Utility.Plugin
 {
     // This class contains the plugin-level logic of the Loupedeck plugin.
 
-    public class UtilityPlugin : Loupedeck.Plugin
+    public class GoXLRUtilityPlugin : Loupedeck.Plugin
     {
         public GoXlrUtilityClient Client { get; }
 
@@ -12,7 +12,7 @@ namespace Loupedeck.GoXLR.Utility.Plugin
         // Gets a value indicating whether this is an API-only plugin.
         public override bool HasNoApplication => true;
 
-        public UtilityPlugin()
+        public GoXLRUtilityPlugin()
         {
             Client = new GoXlrUtilityClient();
         }
