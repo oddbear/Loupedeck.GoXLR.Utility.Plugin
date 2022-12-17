@@ -2,6 +2,7 @@
 using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
+using Loupedeck.GoXLR.Utility.Plugin.Enums;
 
 namespace Loupedeck.GoXLR.Utility.Plugin.Actions
 {
@@ -11,12 +12,12 @@ namespace Loupedeck.GoXLR.Utility.Plugin.Actions
 
         private GoXlrUtilityClient Client => _plugin?.Client;
         
-        private string _channelName;
+        private ChannelName _channelName;
         private MuteFunction _muteType;
         private MuteState _muteState;
         private int _volume;
 
-        protected abstract string FaderName { get; }
+        protected abstract FaderName FaderName { get; }
         
         protected FaderAdjustments(string name, string displayName)
             : base(name, displayName, "Adjust Fader", hasReset: true)
@@ -50,7 +51,7 @@ namespace Loupedeck.GoXLR.Utility.Plugin.Actions
             if (!Regex.IsMatch(patch.Path, $@"/mixers/(?<serial>\w+)/fader_status/{FaderName}/channel"))
                 return;
 
-            _channelName = patch.Value.ToObject<string>();
+            _channelName = patch.Value.ToObject<ChannelName>();
             AdjustmentValueChanged();
         }
 
@@ -111,25 +112,9 @@ namespace Loupedeck.GoXLR.Utility.Plugin.Actions
             => Math.Round(_volume * 100d / 0xFF).ToString(CultureInfo.InvariantCulture);
     }
 
-    public enum MuteFunction
-    {
-        All,
-        ToStream,
-        ToVoiceChat,
-        ToPhones,
-        ToLineOut,
-    }
-
-    public enum MuteState
-    {
-        Unmuted,
-        MutedToX,
-        MutedToAll,
-    }
-
     public class FaderA_Adjustment : FaderAdjustments
     {
-        protected override string FaderName => "A";
+        protected override FaderName FaderName => FaderName.A;
 
         public FaderA_Adjustment()
             : base("Fader A", "Fader A") { }
@@ -137,7 +122,7 @@ namespace Loupedeck.GoXLR.Utility.Plugin.Actions
 
     public class FaderB_Adjustment : FaderAdjustments
     {
-        protected override string FaderName => "B";
+        protected override FaderName FaderName => FaderName.B;
 
         public FaderB_Adjustment()
             : base("Fader B", "Fader B") { }
@@ -145,7 +130,7 @@ namespace Loupedeck.GoXLR.Utility.Plugin.Actions
 
     public class FaderC_Adjustment : FaderAdjustments
     {
-        protected override string FaderName => "C";
+        protected override FaderName FaderName => FaderName.C;
 
         public FaderC_Adjustment()
             : base("Fader C", "Fader C") { }
@@ -153,7 +138,7 @@ namespace Loupedeck.GoXLR.Utility.Plugin.Actions
 
     public class FaderD_Adjustment : FaderAdjustments
     {
-        protected override string FaderName => "D";
+        protected override FaderName FaderName => FaderName.D;
 
         public FaderD_Adjustment()
             : base("Fader D", "Fader D") { }

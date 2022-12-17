@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using Loupedeck.GoXLR.Utility.Plugin.Enums;
 
 namespace Loupedeck.GoXLR.Utility.Plugin.Actions
 {
@@ -97,26 +98,5 @@ namespace Loupedeck.GoXLR.Utility.Plugin.Actions
 
             Client.SendCommand(command);
         }
-    }
-
-    public enum InputDevice
-    {
-        Microphone,
-        Chat,
-        Music,
-        Game,
-        Console,
-        LineIn,
-        System,
-        Samples,
-    }
-
-    public enum OutputDevice
-    {
-        Headphones,
-        BroadcastMix,
-        LineOut,
-        ChatMic,
-        Sampler,
     }
 }

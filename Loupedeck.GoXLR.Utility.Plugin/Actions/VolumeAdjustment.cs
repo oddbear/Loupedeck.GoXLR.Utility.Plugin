@@ -1,6 +1,7 @@
 using System;
 using System.Globalization;
 using System.Text.RegularExpressions;
+using Loupedeck.GoXLR.Utility.Plugin.Enums;
 
 namespace Loupedeck.GoXLR.Utility.Plugin.Actions
 {
@@ -15,7 +16,7 @@ namespace Loupedeck.GoXLR.Utility.Plugin.Actions
         protected int _volume;
         protected int _muteVolume;
 
-        public abstract string ChannelName { get; }
+        public abstract ChannelName ChannelName { get; }
         
         // Initializes the adjustment class.
         // When `hasReset` is set to true, a reset command is automatically created for this adjustment.
@@ -61,7 +62,7 @@ namespace Loupedeck.GoXLR.Utility.Plugin.Actions
             var command = new
             {
                 SetVolume = new object[] {
-                    ChannelName,
+                    ChannelName.ToString(),
                     volume
                 }
             };
@@ -108,7 +109,7 @@ namespace Loupedeck.GoXLR.Utility.Plugin.Actions
 
     public class MicVolumeAdjustment : VolumeAdjustment
     {
-        public override string ChannelName => "Mic";
+        public override ChannelName ChannelName => ChannelName.Mic;
 
         public MicVolumeAdjustment()
             : base("Mic", "Mic") { }
@@ -116,7 +117,7 @@ namespace Loupedeck.GoXLR.Utility.Plugin.Actions
 
     public class LineInVolumeAdjustment : VolumeAdjustment
     {
-        public override string ChannelName => "LineIn";
+        public override ChannelName ChannelName => ChannelName.LineIn;
 
         public LineInVolumeAdjustment()
             : base("Line In", "Line In") { }
@@ -124,7 +125,7 @@ namespace Loupedeck.GoXLR.Utility.Plugin.Actions
 
     public class ConsoleVolumeAdjustment : VolumeAdjustment
     {
-        public override string ChannelName => "Console";
+        public override ChannelName ChannelName => ChannelName.Console;
 
         public ConsoleVolumeAdjustment()
             : base("Console", "Console") { }
@@ -132,7 +133,7 @@ namespace Loupedeck.GoXLR.Utility.Plugin.Actions
 
     public class SystemVolumeAdjustment : VolumeAdjustment
     {
-        public override string ChannelName => "System";
+        public override ChannelName ChannelName => ChannelName.System;
 
         public SystemVolumeAdjustment()
             : base("System", "System") { }
@@ -140,7 +141,7 @@ namespace Loupedeck.GoXLR.Utility.Plugin.Actions
 
     public class GameVolumeAdjustment : VolumeAdjustment
     {
-        public override string ChannelName => "Game";
+        public override ChannelName ChannelName => ChannelName.Game;
 
         public GameVolumeAdjustment()
             : base("Game", "Game") { }
@@ -148,7 +149,7 @@ namespace Loupedeck.GoXLR.Utility.Plugin.Actions
 
     public class ChatVolumeAdjustment : VolumeAdjustment
     {
-        public override string ChannelName => "Chat";
+        public override ChannelName ChannelName => ChannelName.Chat;
 
         public ChatVolumeAdjustment()
             : base("Chat", "Chat") { }
@@ -156,7 +157,7 @@ namespace Loupedeck.GoXLR.Utility.Plugin.Actions
 
     public class SampleVolumeAdjustment : VolumeAdjustment
     {
-        public override string ChannelName => "Sample";
+        public override ChannelName ChannelName => ChannelName.Sample;
 
         public SampleVolumeAdjustment()
             : base("Sample", "Sample") { }
@@ -164,7 +165,7 @@ namespace Loupedeck.GoXLR.Utility.Plugin.Actions
 
     public class MusicVolumeAdjustment : VolumeAdjustment
     {
-        public override string ChannelName => "Music";
+        public override ChannelName ChannelName => ChannelName.Music;
 
         public MusicVolumeAdjustment()
             : base("Music", "Music") { }
@@ -172,7 +173,7 @@ namespace Loupedeck.GoXLR.Utility.Plugin.Actions
 
     public class HeadphonesVolumeAdjustment : VolumeAdjustment
     {
-        public override string ChannelName => "Headphones";
+        public override ChannelName ChannelName => ChannelName.Headphones;
 
         public HeadphonesVolumeAdjustment()
             : base("Headphones", "Headphones") { }
@@ -180,7 +181,7 @@ namespace Loupedeck.GoXLR.Utility.Plugin.Actions
 
     public class MicMonitorVolumeAdjustment : VolumeAdjustment
     {
-        public override string ChannelName => "MicMonitor";
+        public override ChannelName ChannelName => ChannelName.MicMonitor;
 
         public MicMonitorVolumeAdjustment()
             : base("Mic Monitor", "Mic Monitor") { }
@@ -188,7 +189,7 @@ namespace Loupedeck.GoXLR.Utility.Plugin.Actions
 
     public class LineOutVolumeAdjustment : VolumeAdjustment
     {
-        public override string ChannelName => "LineOut";
+        public override ChannelName ChannelName => ChannelName.LineOut;
 
         public LineOutVolumeAdjustment()
             : base("Line Out", "Line Out") { }
