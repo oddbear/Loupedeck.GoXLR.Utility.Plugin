@@ -13,8 +13,8 @@ namespace Loupedeck.GoXLR.Utility.Plugin.Actions
         private GoXlrUtilityClient Client => _plugin?.Client;
 
         // This variable holds the current value of the counter.
-        protected int _volume;
-        protected int _muteVolume;
+        private int _volumePercentage;
+        private int _muteVolume;
 
         public abstract ChannelName ChannelName { get; }
         
@@ -48,14 +48,19 @@ namespace Loupedeck.GoXLR.Utility.Plugin.Actions
                 return;
 
             //var serial = match.Groups["serial"];
-            _volume = patch.Value.ToObject<int>();
+            var volume = patch.Value.ToObject<int>();
+            _volumePercentage = (int)Math.Round(volume / 2.55d);
             AdjustmentValueChanged();
         }
 
         public void SetVolume(int diff)
         {
-            var volume = _volume + (int)Math.Round(diff * 2.55d); // Increase or decrease the counter by the number of ticks.
-            
+            var volumePercentage = _volumePercentage += diff;
+            if (volumePercentage > 100) volumePercentage = _volumePercentage = 100;
+            if (volumePercentage < 0) volumePercentage = _volumePercentage = 0;
+
+            var volume = (int)Math.Round(volumePercentage * 2.55d); // Increase or decrease the counter by the number of ticks.
+
             if (volume > byte.MaxValue) volume = byte.MaxValue;
             if (volume < 0) volume = 0;
             
@@ -84,7 +89,7 @@ namespace Loupedeck.GoXLR.Utility.Plugin.Actions
             //Mute can only be done on fader level, not channel level.
             if (_muteVolume == 0)
             {
-                _muteVolume = _volume;
+                _muteVolume = _volumePercentage;
                 SetVolume(0);
             }
             else
@@ -98,7 +103,7 @@ namespace Loupedeck.GoXLR.Utility.Plugin.Actions
 
         // Returns the adjustment value that is shown next to the dial.
         protected override string GetAdjustmentValue(string actionParameter)
-            => Math.Round(_volume * 100d / 0xFF).ToString(CultureInfo.InvariantCulture);
+            => _volumePercentage.ToString(CultureInfo.InvariantCulture);
 
         protected override string GetCommandDisplayName(string actionParameter, PluginImageSize imageSize)
             => $"{ChannelName} Mute";
