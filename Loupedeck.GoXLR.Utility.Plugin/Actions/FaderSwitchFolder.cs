@@ -59,7 +59,7 @@ namespace Loupedeck.GoXLR.Utility.Plugin.Actions
         }
 
         //TODO Should set the Folder Display name but it wont refresh after change, can't find the Methode to Invoke a change
-        //It will only be used for initalization
+        //It will only be used for initialization
         public override string GetButtonDisplayName(PluginImageSize imageSize)
         {
             return _channelName.ToString();
@@ -103,7 +103,6 @@ namespace Loupedeck.GoXLR.Utility.Plugin.Actions
             
             CommandImageChanged($"channel|{FaderName}|{_previousChannelName}");
             CommandImageChanged($"channel|{FaderName}|{_channelName}");
-            
             Close();
         }
     }
@@ -116,7 +115,7 @@ namespace Loupedeck.GoXLR.Utility.Plugin.Actions
         {
             DisplayName = "Fader A";
             GroupName = "Fader Switch Folder";
-            Description = "Fader A";
+            Description = "IMPORTANT: Switching the Fader will reset its mute state, and for the Full Device stay as Level 0";
         }
     }
     
@@ -128,7 +127,7 @@ namespace Loupedeck.GoXLR.Utility.Plugin.Actions
         {
             DisplayName = "Fader B";
             GroupName = "Fader Switch Folder";
-            Description = "Fader B";
+            Description = "IMPORTANT: Switching the Fader will reset its mute state, and for the Full Device stay as Level 0";
         }
     }
     
@@ -140,7 +139,7 @@ namespace Loupedeck.GoXLR.Utility.Plugin.Actions
         {
             DisplayName = "Fader C";
             GroupName = "Fader Switch Folder";
-            Description = "Fader C";
+            Description = "IMPORTANT: Switching the Fader will reset its mute state, and for the Full Device stay as Level 0";
         }
     }
     
@@ -152,7 +151,7 @@ namespace Loupedeck.GoXLR.Utility.Plugin.Actions
         {
             DisplayName = "Fader D";
             GroupName = "Fader Switch Folder";
-            Description = "Fader D";
+            Description = "IMPORTANT: Switching the Fader will reset its mute state, and for the Full Device stay as Level 0";
         }
     }
 }
