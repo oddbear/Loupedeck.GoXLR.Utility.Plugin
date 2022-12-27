@@ -77,6 +77,7 @@
     <Compile Include="Actions\ProfileCommand.cs" />
     <Compile Include="Actions\FaderAdjustments.cs" />
     <Compile Include="Actions\MicProfileCommand.cs" />
+    <Compile Include="Actions\EffectsToggleCommand.cs" />
     <Compile Include="Actions\RoutingCommand.cs" />
     <Compile Include="Actions\VolumeAdjustment.cs" />
     <Compile Include="Enums\ChannelName.cs" />

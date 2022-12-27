@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json.Linq;
 using WebSocketSharp;
@@ -32,6 +33,19 @@ namespace Loupedeck.GoXLR.Utility.Plugin
 			_client.Send($"{{\"id\":{_commandIndex++},\"data\":\"GetStatus\"}}");
 		}
 
+        public void SendCommand(string commandName, params object[] parameters)
+        {
+            var commandParameters = parameters.Length == 1
+                ? parameters[0]
+                : parameters;
+
+			SendCommand(new Dictionary<string, object>
+            {
+                [commandName] = commandParameters
+            });
+		}
+
+		//TODO: Make private, all commands is simpler to call using method above:
         public void SendCommand(object command, string serial = null)
         {
 			if (serial is null)
