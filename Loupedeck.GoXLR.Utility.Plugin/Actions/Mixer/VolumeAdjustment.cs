@@ -3,7 +3,7 @@ using System.Globalization;
 using System.Text.RegularExpressions;
 using Loupedeck.GoXLR.Utility.Plugin.Enums;
 
-namespace Loupedeck.GoXLR.Utility.Plugin.Actions
+namespace Loupedeck.GoXLR.Utility.Plugin.Actions.Mixer
 {
     // This class implements an example adjustment that counts the rotation ticks of a dial.
     public abstract class VolumeAdjustment : PluginDynamicAdjustment
@@ -21,7 +21,7 @@ namespace Loupedeck.GoXLR.Utility.Plugin.Actions
         // Initializes the adjustment class.
         // When `hasReset` is set to true, a reset command is automatically created for this adjustment.
         protected VolumeAdjustment(string name, string displayName)
-            : base(name, displayName, "Adjust Volume", hasReset: true)
+            : base(name, displayName, "Mixer", hasReset: true)
         {
             //
         }

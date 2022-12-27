@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
 using WebSocketSharp;
 
@@ -66,8 +67,8 @@ namespace Loupedeck.GoXLR.Utility.Plugin
                     }
                 }
 			};
-
-            var json = JsonConvert.SerializeObject(finalRequest);
+			
+            var json = JsonConvert.SerializeObject(finalRequest, new StringEnumConverter());
             _client.Send(json);
 		}
 

@@ -1,6 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 
-namespace Loupedeck.GoXLR.Utility.Plugin.Actions
+namespace Loupedeck.GoXLR.Utility.Plugin.Actions.Effects
 {
     public abstract class EffectsToggleCommand : PluginDynamicCommand
     {
@@ -23,26 +23,26 @@ namespace Loupedeck.GoXLR.Utility.Plugin.Actions
         protected override bool OnLoad()
         {
             _plugin = (GoXLRUtilityPlugin)Plugin;
-            Client.PatchEvent += IsRobotEffectChangePatchEvent;
+            Client.PatchEvent += IsEffectEnabledChangePatchEvent;
 
             return true;
         }
 
         protected override bool OnUnload()
         {
-            Client.PatchEvent -= IsRobotEffectChangePatchEvent;
+            Client.PatchEvent -= IsEffectEnabledChangePatchEvent;
 
             return true;
         }
 
-        private void IsRobotEffectChangePatchEvent(object sender, Patch patch)
+        private void IsEffectEnabledChangePatchEvent(object sender, Patch patch)
         {
             var match = Regex.Match(patch.Path, $@"/mixers/(?<serial>\w+)/effects/{EffectPath}");
             if (!match.Success)
                 return;
 
             _isEnabled = patch.Value.ToObject<bool>();
-            AdjustmentValueChanged();
+            ActionImageChanged();
         }
 
         protected override void RunCommand(string actionParameter)

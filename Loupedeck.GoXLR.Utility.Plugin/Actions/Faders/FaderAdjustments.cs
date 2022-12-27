@@ -2,9 +2,10 @@
 using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
+using Loupedeck.GoXLR.Utility.Plugin.Actions.Mixer;
 using Loupedeck.GoXLR.Utility.Plugin.Enums;
 
-namespace Loupedeck.GoXLR.Utility.Plugin.Actions
+namespace Loupedeck.GoXLR.Utility.Plugin.Actions.Faders
 {
     public abstract class FaderAdjustments : PluginDynamicAdjustment
     {
@@ -19,8 +20,8 @@ namespace Loupedeck.GoXLR.Utility.Plugin.Actions
 
         protected abstract FaderName FaderName { get; }
         
-        protected FaderAdjustments(string name, string displayName)
-            : base(name, displayName, "Adjust Fader", hasReset: true)
+        protected FaderAdjustments(string displayName, string description)
+            : base(displayName, description, "Faders", hasReset: true)
         {
             //
         }
