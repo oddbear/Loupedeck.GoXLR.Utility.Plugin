@@ -73,7 +73,6 @@
   <ItemGroup>
     <Compile Include="Actions\Effects\SetActiveEffectPresetCommand.cs" />
     <Compile Include="Actions\FaderSwitchFolder.cs" />
-    <Compile Include="Actions\Faders\FaderMuteCommand.cs" />
     <Compile Include="Actions\ProfileCommand.cs" />
     <Compile Include="Actions\Faders\FaderAdjustments.cs" />
     <Compile Include="Actions\MicProfileCommand.cs" />

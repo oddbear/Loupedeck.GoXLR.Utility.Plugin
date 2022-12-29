@@ -62,6 +62,8 @@ namespace Loupedeck.GoXLR.Utility.Plugin.Actions.Faders
                 return;
 
             _muteState = patch.Value.ToObject<MuteState>();
+            
+            ActionImageChanged();
         }
 
         private void IsMuteTypePatchEvent(object sender, Patch patch)
@@ -99,18 +101,62 @@ namespace Loupedeck.GoXLR.Utility.Plugin.Actions.Faders
 
         protected override void RunCommand(string actionParameter)
         {
-            AdjustmentValueChanged();
-        }
+            //If it's muted, then unmute:
+            if (_muteState != MuteState.Unmuted)
+            {
+                Client.SendCommand("SetFaderMuteState", FaderName, MuteState.Unmuted);
+                return;
+            }
 
-        protected override string GetCommandDisplayName(string actionParameter, PluginImageSize imageSize)
-        {
-            return $"Fader {FaderName}";
+            //Or mute by rule (is this correct to assume?):
+            var muteState = _muteType == MuteFunction.All
+                ? MuteState.MutedToAll
+                : MuteState.MutedToX;
+
+            Client.SendCommand("SetFaderMuteState", FaderName, muteState);
         }
+        
+        protected override string GetCommandDisplayName(string actionParameter, PluginImageSize imageSize)
+        => $"Fader {FaderName} Mute";
+
+        protected override string GetAdjustmentDisplayName(string actionParameter, PluginImageSize imageSize)
+            => $"Fader {FaderName} Volume";
 
         //TODO: Do I need to double check against: _plugin.DynamicAdjustments.OfType<VolumeAdjustment>();
         // ... if this is for some reason set before Faders? At this time this should not happen.
         protected override string GetAdjustmentValue(string actionParameter)
             => Math.Round(_volume * 100d / 0xFF).ToString(CultureInfo.InvariantCulture);
+
+        protected override BitmapImage GetAdjustmentImage(string actionParameter, PluginImageSize imageSize)
+        {
+            using (var bitmapBuilder = new BitmapBuilder(imageSize))
+            {
+                var color = _muteState == MuteState.Unmuted
+                    ? new BitmapColor(0x00, 0x50, 0x00)
+                    : BitmapColor.Black;
+
+                bitmapBuilder.Clear(color);
+                bitmapBuilder.DrawText(DisplayName);
+
+                return bitmapBuilder.ToImage();
+            }
+        }
+
+        //TODO: Some issue with Louepdeck... does not update correctly (only on first load), not refresh:
+        protected override BitmapImage GetCommandImage(string actionParameter, PluginImageSize imageSize)
+        {
+            using (var bitmapBuilder = new BitmapBuilder(imageSize))
+            {
+                var color = _muteState == MuteState.Unmuted
+                    ? new BitmapColor(0x00, 0x50, 0x00)
+                    : BitmapColor.Black;
+
+                bitmapBuilder.Clear(color);
+                bitmapBuilder.DrawText(DisplayName);
+
+                return bitmapBuilder.ToImage();
+            }
+        }
     }
 
     public class FaderA_Adjustment : FaderAdjustments
