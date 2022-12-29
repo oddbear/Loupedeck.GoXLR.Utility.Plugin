@@ -73,12 +73,14 @@
   <ItemGroup>
     <Compile Include="Actions\Effects\SetActiveEffectPresetCommand.cs" />
     <Compile Include="Actions\FaderSwitchFolder.cs" />
+    <Compile Include="Actions\Microphone\SetCoughMuteStateCommand.cs" />
     <Compile Include="Actions\ProfileCommand.cs" />
     <Compile Include="Actions\Faders\FaderAdjustments.cs" />
     <Compile Include="Actions\MicProfileCommand.cs" />
     <Compile Include="Actions\Effects\EffectsToggleCommand.cs" />
     <Compile Include="Actions\RoutingCommand.cs" />
     <Compile Include="Actions\Mixer\VolumeAdjustment.cs" />
+    <Compile Include="Actions\Sampler\SetActiveSamplerBankCommand.cs" />
     <Compile Include="Enums\ChannelName.cs" />
     <Compile Include="Enums\EffectBankPresets.cs" />
     <Compile Include="Enums\FaderName.cs" />
@@ -87,6 +89,7 @@
     <Compile Include="Enums\MuteState.cs" />
     <Compile Include="Enums\OpPatchEnum.cs" />
     <Compile Include="Enums\OutputDevice.cs" />
+    <Compile Include="Enums\SampleBank.cs" />
     <Compile Include="GoXlrUtilityClient.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Loupedeck.GoXLR.Utility.Application.cs" />
