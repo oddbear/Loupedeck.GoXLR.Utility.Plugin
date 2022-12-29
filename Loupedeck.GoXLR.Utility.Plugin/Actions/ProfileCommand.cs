@@ -85,12 +85,7 @@ namespace Loupedeck.GoXLR.Utility.Plugin.Actions
         
         protected override void RunCommand(string actionParameter)
         {
-            var command = new
-            {
-                LoadProfile = actionParameter
-            };
-            
-            Client.SendCommand(command);
+            Client.SendCommand("LoadProfile", actionParameter);
         }
 
         protected override PluginActionParameter[] GetParameters() =>

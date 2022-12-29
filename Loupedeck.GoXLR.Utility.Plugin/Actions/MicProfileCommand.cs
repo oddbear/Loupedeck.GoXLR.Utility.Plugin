@@ -85,12 +85,7 @@ namespace Loupedeck.GoXLR.Utility.Plugin.Actions
 
         protected override void RunCommand(string actionParameter)
         {
-            var command = new
-            {
-                LoadMicProfile = actionParameter
-            };
-
-            Client.SendCommand(command);
+            Client.SendCommand("LoadMicProfile", actionParameter);
         }
 
         protected override PluginActionParameter[] GetParameters() =>

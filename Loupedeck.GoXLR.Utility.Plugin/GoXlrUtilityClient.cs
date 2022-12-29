@@ -36,6 +36,12 @@ namespace Loupedeck.GoXLR.Utility.Plugin
 
         public void SendCommand(string commandName, params object[] parameters)
         {
+			if (commandName is null)
+				return;
+
+			if (parameters is null || parameters.Length < 1)
+				return;
+
             var commandParameters = parameters.Length == 1
                 ? parameters[0]
                 : parameters;
@@ -45,12 +51,10 @@ namespace Loupedeck.GoXLR.Utility.Plugin
                 [commandName] = commandParameters
             });
 		}
-
-		//TODO: Make private, all commands is simpler to call using method above:
-        public void SendCommand(object command, string serial = null)
+		
+        private void SendCommand(object command)
         {
-			if (serial is null)
-                serial = Devices.FirstOrDefault();
+            var serial = Devices?.FirstOrDefault();
 
             if (serial is null)
 				return;

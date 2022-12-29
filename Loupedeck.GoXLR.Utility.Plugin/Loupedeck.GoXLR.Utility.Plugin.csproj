@@ -71,6 +71,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Actions\Effects\SetActiveEffectPresetCommand.cs" />
     <Compile Include="Actions\FaderSwitchFolder.cs" />
     <Compile Include="Actions\Faders\FaderMuteCommand.cs" />
     <Compile Include="Actions\ProfileCommand.cs" />
@@ -80,6 +81,7 @@
     <Compile Include="Actions\RoutingCommand.cs" />
     <Compile Include="Actions\Mixer\VolumeAdjustment.cs" />
     <Compile Include="Enums\ChannelName.cs" />
+    <Compile Include="Enums\EffectBankPresets.cs" />
     <Compile Include="Enums\FaderName.cs" />
     <Compile Include="Enums\InputDevice.cs" />
     <Compile Include="Enums\MuteFunction.cs" />

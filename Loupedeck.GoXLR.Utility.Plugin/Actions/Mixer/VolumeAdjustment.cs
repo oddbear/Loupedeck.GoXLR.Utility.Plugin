@@ -64,15 +64,7 @@ namespace Loupedeck.GoXLR.Utility.Plugin.Actions.Mixer
             if (volume > byte.MaxValue) volume = byte.MaxValue;
             if (volume < 0) volume = 0;
             
-            var command = new
-            {
-                SetVolume = new object[] {
-                    ChannelName.ToString(),
-                    volume
-                }
-            };
-
-            Client.SendCommand(command);
+            Client.SendCommand("SetVolume", ChannelName, volume);
         }
 
         // This method is called when the dial associated to the plugin is rotated.

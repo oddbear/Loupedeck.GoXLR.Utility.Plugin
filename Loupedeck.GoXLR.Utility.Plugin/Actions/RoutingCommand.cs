@@ -85,18 +85,8 @@ namespace Loupedeck.GoXLR.Utility.Plugin.Actions
                 return;
 
             var routing = actionParameter.Split('|');
-
-            var command = new
-            {
-                SetRouter = new object[]
-                {
-                    routing[0],
-                    routing[1],
-                    !state
-                }
-            };
-
-            Client.SendCommand(command);
+            
+            Client.SendCommand("SetRouter", routing[0], routing[1], !state);
         }
     }
 }

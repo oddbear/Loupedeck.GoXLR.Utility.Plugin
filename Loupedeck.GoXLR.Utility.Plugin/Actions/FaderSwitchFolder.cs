@@ -83,20 +83,11 @@ namespace Loupedeck.GoXLR.Utility.Plugin.Actions
                 return;
 
             var parameter = actionParameter.Split("|");
-
-            var command = new
-            {
-                SetFader = new object[]
-                {
-                    parameter[1],
-                    parameter[2]
-                }
-            };
-
+            
             if (!Enum.TryParse(parameter[2], out ChannelName channelName))
                 return;
 
-            Client.SendCommand(command);
+            Client.SendCommand("SetFader", parameter[1], parameter[2]);
             
             _previousChannelName = _channelName;
             _channelName = channelName;
