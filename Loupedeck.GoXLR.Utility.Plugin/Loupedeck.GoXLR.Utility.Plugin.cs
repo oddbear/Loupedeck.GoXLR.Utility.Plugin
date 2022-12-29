@@ -15,6 +15,13 @@ namespace Loupedeck.GoXLR.Utility.Plugin
         public GoXLRUtilityPlugin()
         {
             Client = new GoXlrUtilityClient();
+            Client.PluginStatusEvent += (sender, status) =>
+            {
+                OnPluginStatusChanged(status.status,
+                    status.message,
+                    "https://github.com/oddbear/Loupedeck.GoXLR.Utility.Plugin",
+                    "GoXLR Utility Plugin Repository");
+            };
         }
 
         // This method is called when the plugin is loaded during the Loupedeck service start-up.

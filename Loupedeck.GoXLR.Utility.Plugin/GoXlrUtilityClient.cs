@@ -1,7 +1,10 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Threading;
+using Loupedeck.GoXLR.Utility.Plugin.Enums;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
 using WebSocketSharp;
@@ -9,29 +12,83 @@ using WebSocketSharp;
 namespace Loupedeck.GoXLR.Utility.Plugin
 {
 	public class GoXlrUtilityClient : IDisposable
-	{
-		/// <summary>Event handler for patches.</summary>
-		public event EventHandler<Patch> PatchEvent;
-        
+    {
+        private readonly Thread _thread;
+        private readonly CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
+
+        private WebSocket _client;
+
+        private int _commandIndex = 0;
+
         /// <summary>Serial numbers of devices.</summary>
         public string[] Devices;
 
-		private readonly WebSocket _client;
+        /// <summary>Event handler for patches.</summary>
+        public event EventHandler<Patch> PatchEvent;
+        public event EventHandler<(PluginStatus status, string message)> PluginStatusEvent;
 
-		public GoXlrUtilityClient()
-		{
-			_client = new WebSocket("ws://127.0.0.1:14564/api/websocket");
-			_client.OnOpen += ClientOnOpen;
-			_client.OnClose += ClientOnClose;
-			_client.OnMessage += ClientOnMessage;
+        public GoXlrUtilityClient()
+        {
+            _thread = new Thread(Reconnect);
 		}
 
-		private int _commandIndex = 0;
+        private void Reconnect()
+        {
+            while (!_cancellationTokenSource.IsCancellationRequested)
+            {
+                bool Connected() => _client?.ReadyState == WebSocketState.Open;
 
-		public void Start()
-		{
-			_client.Connect();
-			_client.Send($"{{\"id\":{_commandIndex++},\"data\":\"GetStatus\"}}");
+                try
+                {
+                    if (Connected())
+                        continue;
+
+                    if (_client is null)
+                        _client = CreateClient();
+
+                    _client.Connect();
+                    
+                    if (Connected())
+                    {
+                        PluginStatusEvent?.Invoke(this, (PluginStatus.Normal, "Connected"));
+                    }
+                    else
+                    {
+                        PluginStatusEvent?.Invoke(this, (PluginStatus.Warning, "Could not connect to goxlr utility, is it running on this machine?"));
+                    }
+                }
+                catch (Exception exception)
+                {
+                    if (exception.Message != "A series of reconnecting has failed.")
+                    {
+                        Trace.WriteLine($"{exception.GetType().Name}: {exception.Message}");
+                        PluginStatusEvent?.Invoke(this, (PluginStatus.Error, $"Error: {exception.Message}"));
+                    }
+
+                    IDisposable oldClient = _client;
+                    _client = CreateClient();
+                    oldClient?.Dispose();
+                }
+                finally
+                {
+                    Thread.Sleep(TimeSpan.FromSeconds(5));
+                }
+            }
+        }
+
+        private WebSocket CreateClient()
+        {
+            var client = new WebSocket("ws://127.0.0.1:14564/api/websocket");
+            client.OnOpen += ClientOnOpen;
+            client.OnClose += ClientOnClose;
+            client.OnMessage += ClientOnMessage;
+
+            return client;
+        }
+
+        public void Start()
+        {
+            _thread.Start();
 		}
 
         public void SendCommand(string commandName, params object[] parameters)
@@ -77,9 +134,9 @@ namespace Loupedeck.GoXLR.Utility.Plugin
 		}
 
 		private void ClientOnOpen(object sender, EventArgs eventArgs)
-		{
-			//eventArgs.Dump();
-		}
+        {
+            _client.Send($"{{\"id\":{_commandIndex++},\"data\":\"GetStatus\"}}");
+        }
 
 		private void ClientOnClose(object sender, CloseEventArgs closeEventArgs)
 		{
@@ -159,7 +216,8 @@ namespace Loupedeck.GoXLR.Utility.Plugin
 
 		public void Dispose()
 		{
-			((IDisposable)_client)?.Dispose();
+            _cancellationTokenSource?.Cancel();
+            ((IDisposable)_client)?.Dispose();
 		}
 	}
 
@@ -182,12 +240,5 @@ namespace Loupedeck.GoXLR.Utility.Plugin
 
 		[JsonProperty("value")]
 		public JToken Value { get; set; }
-	}
-
-	public enum OpPatchEnum
-	{
-		Add,
-		Replace,
-		Remove
 	}
 }

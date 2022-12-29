@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using Loupedeck.GoXLR.Utility.Plugin.Enums;
 
 namespace Loupedeck.GoXLR.Utility.Plugin.Actions
 {

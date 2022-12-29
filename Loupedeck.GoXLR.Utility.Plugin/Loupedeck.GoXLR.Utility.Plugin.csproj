@@ -85,6 +85,7 @@
     <Compile Include="Enums\InputDevice.cs" />
     <Compile Include="Enums\MuteFunction.cs" />
     <Compile Include="Enums\MuteState.cs" />
+    <Compile Include="Enums\OpPatchEnum.cs" />
     <Compile Include="Enums\OutputDevice.cs" />
     <Compile Include="GoXlrUtilityClient.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
