@@ -82,7 +82,7 @@ namespace Loupedeck.GoXLR.Utility.Plugin.Actions.Mixer
             if (_muteVolume == 0)
             {
                 _muteVolume = _volumePercentage;
-                SetVolume(0);
+                SetVolume(-(byte)_muteVolume);
             }
             else
             {
